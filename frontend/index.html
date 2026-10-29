@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adult Income Predictor</title>
+
+  <style>
+    :root {
+      --bg: #f3f5f8; --card: #ffffff; --text: #1d2733; --muted: #5d6b7a;
+      --border: #d5dbe3; --accent: #1f6f8b; --accent-dark: #17566d; --error: #b3261e;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 2rem 1rem; font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+    header { max-width: 900px; margin: 0 auto 1.5rem; text-align: center; }
+    h1 { margin: 0 0 0.25rem; font-size: 1.75rem; color: var(--accent); }
+    header p { margin: 0; color: var(--muted); }
+
+    main { max-width: 900px; margin: 0 auto; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+
+    label { display: block; margin-top: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+    input, select { width: 100%; margin-top: 0.25rem; padding: 0.55rem; font: inherit; border: 1px solid var(--border); border-radius: 6px; }
+    
+    button { margin-top: 1.5rem; width: 100%; padding: 0.8rem; font: inherit; font-weight: 600; color: #fff; background: var(--accent); border: 0; border-radius: 6px; cursor: pointer; }
+    button:hover { background: var(--accent-dark); }
+    button:disabled { opacity: 0.6; cursor: wait; }
+
+    .results-container { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+    @media (max-width: 600px) { .results-container { grid-template-columns: 1fr; } }
+    
+    .result-card { padding: 1rem; border-radius: 6px; background: var(--bg); border: 1px solid var(--border); text-align: center; }
+    .result-card h3 { margin: 0 0 0.5rem; font-size: 1rem; color: var(--muted); }
+    .result-card strong { display: block; font-size: 1.5rem; color: var(--accent); margin-bottom: 0.5rem; }
+    .result-card .prob { font-size: 0.9rem; color: var(--text); }
+    .result-card.error { border-color: var(--error); color: var(--error); }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Adult Income Predictor</h1>
+    <p>Compare Logistic Regression and Decision Tree predictions on the Census dataset.</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Enter Details</h2>
+      <form id="censusForm">
+        <div class="form-grid">
+          <div>
+            <label>Age <input id="age" type="number" min="17" max="90" required value="45"></label>
+          </div>
+          <div>
+            <label>Hours per week <input id="hours" type="number" min="1" max="99" required value="50"></label>
+          </div>
+          <div>
+            <label>Workclass 
+              <select id="workclass">
+                <option>Private</option><option>Self-emp-not-inc</option><option>Self-emp-inc</option>
+                <option>Federal-gov</option><option>Local-gov</option><option>State-gov</option>
+              </select>
+            </label>
+          </div>
+          <div>
+            <label>Education 
+              <select id="education">
+                <option>Masters</option><option>Bachelors</option><option>HS-grad</option>
+                <option>Some-college</option><option>Assoc-voc</option><option>11th</option>
+              </select>
+            </label>
+          </div>
+          <div>
+            <label>Marital Status 
+              <select id="marital">
+                <option>Married-civ-spouse</option><option>Never-married</option><option>Divorced</option>
+                <option>Separated</option><option>Widowed</option>
+              </select>
+            </label>
+          </div>
+          <div>
+            <label>Occupation 
+              <select id="occupation">
+                <option>Exec-managerial</option><option>Prof-specialty</option><option>Craft-repair</option>
+                <option>Adm-clerical</option><option>Sales</option><option>Other-service</option>
+              </select>
+            </label>
+          </div>
+          <div>
+            <label>Relationship 
+              <select id="relationship">
+                <option>Husband</option><option>Not-in-family</option><option>Own-child</option>
+                <option>Unmarried</option><option>Wife</option>
+              </select>
+            </label>
+          </div>
+          <div>
+            <label>Race 
+              <select id="race">
+                <option>White</option><option>Black</option><option>Asian-Pac-Islander</option>
+                <option>Amer-Indian-Eskimo</option><option>Other</option>
+              </select>
+            </label>
+          </div>
+          <div>
+            <label>Sex 
+              <select id="sex"><option>Male</option><option>Female</option></select>
+            </label>
+          </div>
+          <div>
+            <label>Native Country 
+              <select id="native_country">
+                <option>United-States</option><option>Mexico</option><option>Philippines</option>
+                <option>Germany</option><option>Canada</option><option>India</option>
+              </select>
+            </label>
+          </div>
+          <div>
+            <label>Capital Gain <input id="capital_gain" type="number" min="0" required value="0"></label>
+          </div>
+          <div>
+            <label>Capital Loss <input id="capital_loss" type="number" min="0" required value="0"></label>
+          </div>
+        </div>
+        <button type="submit" id="submitBtn">Predict Income</button>
+      </form>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results" hidden>
+      <h2>Prediction Results</h2>
+      <div class="results-container">
+        <div class="result-card" id="logisticCard">
+          <h3>Logistic Regression</h3>
+          <strong id="logisticPred">-</strong>
+          <div class="prob" id="logisticProb">Confidence: -</div>
+        </div>
+        <div class="result-card" id="treeCard">
+          <h3>Decision Tree</h3>
+          <strong id="treePred">-</strong>
+          <div class="prob" id="treeProb">Confidence: -</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API = "http://127.0.0.1:8000";
+    const form = document.getElementById("censusForm");
+    const resultsSection = document.getElementById("results");
+    const btn = document.getElementById("submitBtn");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      btn.disabled = true;
+      btn.textContent = "Predicting...";
+      resultsSection.hidden = false;
+
+      // Reset UI
+      document.getElementById("logisticPred").textContent = "...";
+      document.getElementById("treePred").textContent = "...";
+
+      const payload = {
+        age: Number(document.getElementById("age").value),
+        workclass: document.getElementById("workclass").value,
+        education: document.getElementById("education").value,
+        marital_status: document.getElementById("marital").value,
+        occupation: document.getElementById("occupation").value,
+        relationship: document.getElementById("relationship").value,
+        race: document.getElementById("race").value,
+        sex: document.getElementById("sex").value,
+        hours_per_week: Number(document.getElementById("hours").value),
+        capital_gain: Number(document.getElementById("capital_gain").value),
+        capital_loss: Number(document.getElementById("capital_loss").value),
+        native_country: document.getElementById("native_country").value
+      };
+
+      try {
+        const [resLog, resTree] = await Promise.all([
+          fetch(API + "/predict/census-logistic", {
+            method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(payload)
+          }),
+          fetch(API + "/predict/census-tree", {
+            method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(payload)
+          })
+        ]);
+
+        const dataLog = await resLog.json();
+        const dataTree = await resTree.json();
+
+        if (!resLog.ok) throw new Error("Logistic: " + JSON.stringify(dataLog.detail));
+        if (!resTree.ok) throw new Error("Tree: " + JSON.stringify(dataTree.detail));
+
+        // Update Logistic UI
+        document.getElementById("logisticPred").textContent = dataLog.prediction;
+        document.getElementById("logisticProb").textContent = "Confidence: " + (dataLog.probability_over_50k * 100).toFixed(1) + "%";
+        document.getElementById("logisticCard").classList.remove("error");
+
+        // Update Tree UI
+        document.getElementById("treePred").textContent = dataTree.prediction;
+        document.getElementById("treeProb").textContent = "Confidence: " + (dataTree.probability_over_50k * 100).toFixed(1) + "%";
+        document.getElementById("treeCard").classList.remove("error");
+
+      } catch (error) {
+        document.getElementById("logisticPred").textContent = "Error";
+        document.getElementById("treePred").textContent = "Error";
+        document.getElementById("logisticProb").textContent = error.message;
+        document.getElementById("treeProb").textContent = "";
+        document.getElementById("logisticCard").classList.add("error");
+        document.getElementById("treeCard").classList.add("error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Predict Income";
+      }
+    });
+  </script>
+</body>
+</html>
