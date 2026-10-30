@@ -248,4 +248,4 @@ Add your held-out test results here once finalized:
 
 ## License
 
-Specify a license (e.g. MIT) before publishing.
+
