@@ -144,8 +144,6 @@ About 76% of records in the dataset earn `<=50K`, so a model that always predict
 - No feature scaling is applied.
 
 ### Limitations
-
-- **Decision tree capacity:** the saved tree is not depth-limited, so it likely overfits. Treat its probabilities as coarse.
 - **Single metric:** only accuracy is reported (see above).
 - **Fairness and responsible use:** features include `sex` and `race`, and the underlying 1994 data reflects historical societal bias. **Do not use this model for real decisions about individuals** (hiring, lending, housing, and so on). It is intended strictly for learning and demonstration.
 - **Data vintage:** predictions reflect 1990s wages and do not account for inflation.
