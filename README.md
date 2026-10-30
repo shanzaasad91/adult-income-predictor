@@ -135,8 +135,7 @@ curl -X POST http://127.0.0.1:8000/predict/census-logistic \
 | Logistic Regression | 84.25% |
 | Decision Tree | 81.67% |
 
-About 76% of records in the dataset earn `<=50K`, so a model that always predicts `<=50K` would already score about 76% accuracy. Both models beat that baseline, but accuracy alone hides how well each one finds the `>50K` class. Precision, recall, F1 and ROC-AUC are listed in the [Roadmap](#roadmap).
-
+About 76% of records in the dataset earn `<=50K`, so a model that always predicts `<=50K` would already score about 76% accuracy. Both models beat that baseline, but accuracy alone hides how well each one finds the `>50K` class.
 ### Preprocessing
 
 - Rows with missing values (`?`) are removed.
@@ -158,9 +157,4 @@ About 76% of records in the dataset earn `<=50K`, so a model that always predict
 - The raw dataset is in `data/adult.csv`, and the full training pipeline is in `ml/census_training.ipynb`.
 - If you retrain, regenerate both the model files and their matching `*_columns.pkl` files so they stay in sync.
 
-## Roadmap
 
-- [ ] Report precision, recall, F1, ROC-AUC and a confusion matrix for both models
-- [ ] Limit decision-tree depth (`max_depth` / `min_samples_leaf`) or try Random Forest / Gradient Boosting
-- [ ] Add a `/health` endpoint, automated tests and a Dockerfile
-- [ ] Add a license file
